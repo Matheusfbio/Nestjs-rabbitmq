@@ -1,0 +1,68 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "targetDefaults": {
+    "format": {
+      "outputs": ["{projectRoot}/yes"],
+      "cache": true
+    },
+    "build": {
+      "cache": true
+    },
+    "start": {
+      "cache": true
+    },
+    "start:dev": {
+      "cache": true
+    },
+    "start:debug": {
+      "cache": true
+    },
+    "start:prod": {
+      "cache": true
+    },
+    "lint": {
+      "cache": true
+    },
+    "test": {
+      "cache": true
+    },
+    "test:watch": {
+      "cache": true
+    },
+    "test:cov": {
+      "cache": true
+    },
+    "test:debug": {
+      "cache": true
+    },
+    "test:e2e": {
+      "cache": true
+    }
+  },
+  "plugins": [
+    {
+      "plugin": "@nx/webpack/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "serveTargetName": "serve",
+        "previewTargetName": "preview",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps",
+        "serveStaticTargetName": "serve-static"
+      }
+    },
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "eslint:lint"
+      }
+    },
+    {
+      "plugin": "@nx/jest/plugin",
+      "options": {
+        "targetName": "test"
+      },
+      "exclude": ["apps/api-gateway-e2e/**/*"]
+    }
+  ]
+}
