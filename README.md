@@ -21,78 +21,107 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+## Descrição
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Projeto de estudo sobre arquitetura de microsserviços utilizando NestJS e RabbitMQ como message broker.
 
-## Project setup
+## Sobre o Projeto
+
+Este projeto demonstra a implementação de uma arquitetura de microsserviços com comunicação assíncrona através do RabbitMQ. O objetivo é estudar e aplicar conceitos de:
+
+- **Arquitetura de Microsserviços**: Separação de responsabilidades em serviços independentes
+- **Message Broker**: Comunicação assíncrona entre serviços usando RabbitMQ
+- **Event-Driven Architecture**: Processamento baseado em eventos
+- **NestJS Microservices**: Utilização do módulo de microsserviços do NestJS
+
+## Arquitetura
+
+O projeto é composto por 4 serviços:
+
+### 1. API Gateway (porta 3000)
+
+- Ponto de entrada HTTP para o sistema
+- Recebe requisições REST e encaminha para os microsserviços via RabbitMQ
+- Rota: `POST /api/order`
+
+### 2. Order Service
+
+- Processa pedidos recebidos
+- Emite eventos para Payment Service e Notification Service
+- Escuta: `order_created`
+- Emite: `process_payment`, `send_notification`
+
+### 3. Payment Service
+
+- Processa pagamentos dos pedidos
+- Notifica sobre o status do pagamento
+- Escuta: `process_payment`
+- Emite: `payment_processed`
+
+### 4. Notification Service
+
+- Envia notificações sobre eventos do sistema
+- Escuta: `send_notification`, `payment_processed`
+
+## Fluxo de Comunicação
+
+```
+Cliente HTTP → API Gateway → [RabbitMQ] → Order Service
+                                              ↓
+                                    ┌─────────┴─────────┐
+                                    ↓                   ↓
+                            Payment Service    Notification Service
+                                    ↓
+                            Notification Service
+```
+
+## Pré-requisitos
+
+- Node.js (v18+)
+- RabbitMQ rodando localmente na porta 5672
+- Credenciais padrão: `user:12345`
+
+## Instalação
 
 ```bash
 $ npm install
 ```
 
-## Compile and run the project
+## Executando o Projeto
+
+Você precisa iniciar todos os serviços em terminais separados:
 
 ```bash
-# development
-$ npm run start
+# Terminal 1 - API Gateway
+$ nx serve api-gateway
 
-# watch mode
-$ npm run start:dev
+# Terminal 2 - Order Service
+$ nx serve order-service
 
-# production mode
-$ npm run start:prod
+# Terminal 3 - Payment Service
+$ nx serve payment-service
+
+# Terminal 4 - Notification Service
+$ nx serve notification-service
 ```
 
-## Run tests
+## Testando
 
-```bash
-# unit tests
-$ npm run test
+Use o arquivo `client.http` para testar:
 
-# e2e tests
-$ npm run test:e2e
+```http
+POST http://localhost:3000/api/order
+Content-Type: application/json
 
-# test coverage
-$ npm run test:cov
+{
+  "orderId": 132,
+  "user": "Matheus Fabio"
+}
 ```
 
-## Deployment
+## Tecnologias Utilizadas
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- **NestJS**: Framework Node.js para construção de aplicações server-side
+- **RabbitMQ**: Message broker para comunicação assíncrona
+- **TypeScript**: Linguagem de programação
+- **Nx**: Ferramenta de monorepo para gerenciar múltiplos projetos

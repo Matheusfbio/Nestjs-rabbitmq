@@ -1,0 +1,10 @@
+###
+POST http://localhost:3000/api/order HTTP/1.1
+Content-Type: application/json
+
+{
+  "orderId": 12345,
+  "user": "Matheus Fabio"
+}
+
+###
